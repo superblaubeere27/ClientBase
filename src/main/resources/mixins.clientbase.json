@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "net.superblaubeere27.clientbase.injection.mixins",
+  "refmap": "mixins.clientbase.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinEntity",
+    "MixinEntityPlayerSP",
+    "MixinGuiChat",
+    "MixinGuiIngame",
+    "MixinGuiScreen",
+    "MixinGuiSpectator",
+    "MixinMinecraft",
+    "MixinRenderer"
+  ]
+}

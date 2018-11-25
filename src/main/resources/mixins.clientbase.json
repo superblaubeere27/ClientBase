@@ -11,6 +11,7 @@
     "MixinGuiScreen",
     "MixinGuiSpectator",
     "MixinMinecraft",
+    "MixinNetworkManager",
     "MixinRenderer"
   ]
 }

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2018 superblaubeere27
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package com.darkmagician6.eventapi;
 
 import com.darkmagician6.eventapi.events.Event;
@@ -50,7 +60,7 @@ public final class EventManager {
      * the specified Event as the parameter in the class of the given Object.
      *
      * @param object    Object that contains the Method you want to register.
-     * @param Parameter class for the marked method we are looking for.
+     * @param eventClass class for the marked method we are looking for.
      */
     public static void register(Object object, Class<? extends Event> eventClass) {
         for (final Method method : object.getClass().getDeclaredMethods()) {
@@ -83,7 +93,7 @@ public final class EventManager {
      * Unregisters all the methods in the given Object that have the specified class as a parameter.
      *
      * @param object    Object that implements the Listener interface.
-     * @param Parameter class for the method to remove.
+     * @param eventClass class for the method to remove.
      */
     public static void unregister(Object object, Class<? extends Event> eventClass) {
         if (REGISTRY_MAP.containsKey(eventClass)) {
@@ -172,7 +182,7 @@ public final class EventManager {
      * @param indexClass The Event class index in the HashMap of the List to sort.
      */
     private static void sortListValue(Class<? extends Event> indexClass) {
-        List<MethodData> sortedList = new CopyOnWriteArrayList<MethodData>();
+        List<MethodData> sortedList = new CopyOnWriteArrayList<>();
 
         for (final byte priority : Priority.VALUE_ARRAY) {
             for (final MethodData data : REGISTRY_MAP.get(indexClass)) {
@@ -203,7 +213,7 @@ public final class EventManager {
      * Performed checks: Checks if the parameter class of the method is the same as the event we want to receive.
      *
      * @param method Method to check.
-     * @param Class  of the Event we want to find a method for receiving it.
+     * @param eventClass  of the Event we want to find a method for receiving it.
      * @return True if the method should not be used for receiving event calls from the Dispatcher.
      * @see EventTarget
      */

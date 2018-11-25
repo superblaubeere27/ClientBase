@@ -12,25 +12,25 @@ package net.superblaubeere27.clientbase.scripting;
 
 
 import com.darkmagician6.eventapi.EventTarget;
-import jdk.nashorn.api.scripting.NashornScriptEngine;
 import net.superblaubeere27.clientbase.events.MotionUpdateEvent;
 import net.superblaubeere27.clientbase.events.Render2DEvent;
 import net.superblaubeere27.clientbase.modules.Module;
 import net.superblaubeere27.clientbase.modules.ModuleCategory;
 import net.superblaubeere27.clientbase.scripting.runtime.events.ScriptMotionUpdateEvent;
 
+import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 public class ScriptModule extends Module {
-    private NashornScriptEngine engine;
+    private ScriptEngine engine;
 
     ScriptModule(String name, String desc, ModuleCategory category) {
         super(name, desc, category);
     }
 
     public void setScriptEngine(ScriptEngine scriptEngine) {
-        engine = (NashornScriptEngine) scriptEngine;
+        engine = scriptEngine;
     }
 
 
@@ -38,7 +38,7 @@ public class ScriptModule extends Module {
     public void onRender2D(Render2DEvent event) {
         if (!getState()) return;
         try {
-            engine.invokeFunction("onRender2D");
+            ((Invocable) engine).invokeFunction("onRender2D");
         } catch (ScriptException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException ignored) {
@@ -51,7 +51,7 @@ public class ScriptModule extends Module {
         ScriptMotionUpdateEvent ev = new ScriptMotionUpdateEvent(event.getEventType(), event.getX(), event.getY(), event.getZ(), event.getYaw(), event.getPitch(), event.isOnGround());
 
         try {
-            engine.invokeFunction("onMotionUpdate", ev);
+            ((Invocable) engine).invokeFunction("onMotionUpdate", ev);
         } catch (NoSuchMethodException ignored) {
         } catch (Exception e) {
             e.printStackTrace();

@@ -38,6 +38,9 @@ public class ScriptManager {
 
     public void newScript() {
         engine = new ScriptEngineManager().getEngineByName("nashorn");
+
+        if (engine == null) return;
+
         try {
             engine.eval(moduleScriptHeader);
         } catch (ScriptException e) {
@@ -46,6 +49,8 @@ public class ScriptManager {
     }
 
     public Object eval(String script) throws ScriptException {
+        if (engine == null) return "Failed to initialize engine";
+
         return engine.eval(script);
     }
 

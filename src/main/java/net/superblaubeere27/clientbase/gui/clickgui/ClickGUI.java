@@ -34,14 +34,20 @@ public class ClickGUI extends GuiScreen {
     private List<Panel> panels = new ArrayList<>();
 
     public ClickGUI() {
-        int x = 202;
+    }
+
+    public void init() {
+        int x = 0;
+        int width = 100;
 
         for (final ModuleCategory moduleCategory : ModuleCategory.values()) {
-            final Panel panel = new Panel(moduleCategory.toString(), x, 50, 100);
+            final Panel panel = new Panel(moduleCategory.toString(), x, 50, width);
             ClientBase.INSTANCE.moduleManager.getModules().stream().filter(module -> module.getCategory() == moduleCategory).forEach(module -> panel.addButton(new Button(panel, module)));
 
-            if (panel.getButtons().size() > 0) panels.add(panel);
-
+            if (panel.getButtons().size() > 0) {
+                panels.add(panel);
+                x += width * 1.2;
+            }
 
         }
     }
@@ -81,13 +87,8 @@ public class ClickGUI extends GuiScreen {
             return;
         }
 
-        for (Panel panel : panels) {
-            for (Button button : panel.getButtons()) {
-                button.onMouseClick(mouseX, mouseY, mouseButton);
-            }
-        }
 
-
+        OuterLoop:
         for (int index = panels.size() - 1; index >= 0; index--) {
             final Panel panel = panels.get(index);
 
@@ -109,11 +110,15 @@ public class ClickGUI extends GuiScreen {
                 if (button.isHover(panel.getX(), panel.getY() + 20 + (20 * buttonIndex), panel.getWidth(), 20, mouseX, mouseY) && mouseButton == 0) {
                     button.getModule().setState(!button.getModule().getState());
                     this.mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("random.bow"), 1.0f));
+                    break OuterLoop;
                 }
                 if (button.isHover(panel.getX(), panel.getY() + 20 + (20 * buttonIndex), panel.getWidth(), 20, mouseX, mouseY) && mouseButton == 1) {
                     button.setExtended(!button.isExtended());
                     this.mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("random.bow"), 1.0f));
+                    break OuterLoop;
                 }
+
+                if (button.onMouseClick(mouseX, mouseY, mouseButton)) break OuterLoop;
             }
         }
 

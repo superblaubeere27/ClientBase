@@ -69,13 +69,16 @@ public class CheckBoxUI extends AbstractComponentUI<BooleanValue> {
     }
 
     @Override
-    public void onMouseClick(int x, int y, int mouseButton) {
+    public boolean onMouseClick(int x, int y, int mouseButton) {
         Point mouse = new Point(x, y);
         Rectangle area = new Rectangle(getX(), getY(), width, height);
 
         if (area.contains(mouse) && mouseButton == 0) {
             value.setObject(!value.getObject());
+            return true;
         }
+
+        return false;
     }
 
     @Override

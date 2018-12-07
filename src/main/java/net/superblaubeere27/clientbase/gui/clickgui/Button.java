@@ -96,11 +96,14 @@ public class Button {
         isExtended = extended;
     }
 
-    public void onMouseClick(int x, int y, int mouseButton) {
+    public boolean onMouseClick(int x, int y, int mouseButton) {
+        boolean flag = false;
+
         for (AbstractComponentUI<?> setting : settings) {
             if (isExtended) {
-                setting.onMouseClick(x, y, mouseButton);
+                if (setting.onMouseClick(x, y, mouseButton)) flag = true;
             }
         }
+        return flag;
     }
 }

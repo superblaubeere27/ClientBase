@@ -32,7 +32,13 @@ public abstract class AbstractComponentUI<T> {
 
     public abstract void draw();
 
-    public abstract void onMouseClick(int x, int y, int mouseButton);
+    /**
+     * @param x           The X coordinate
+     * @param y           The Y coordinate
+     * @param mouseButton Mouse button
+     * @return Returns true if the mouse hit something
+     */
+    public abstract boolean onMouseClick(int x, int y, int mouseButton);
 
     public boolean isShown() {
         return shown;

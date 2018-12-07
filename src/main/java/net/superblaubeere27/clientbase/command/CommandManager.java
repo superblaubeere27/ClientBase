@@ -39,7 +39,7 @@ public class CommandManager {
 
     public boolean executeCommand(@NotNull String string) {
         String raw = string.substring(1);
-        String split[] = raw.split(" ");
+        String[] split = raw.split(" ");
 
         if (split.length == 0) return false;
 
@@ -52,7 +52,7 @@ public class CommandManager {
                 ChatUtils.send("§c'" + cmdName + "' doesn't exist");
                 return false;
             } else {
-                String args[] = new String[split.length - 1];
+                String[] args = new String[split.length - 1];
 
                 System.arraycopy(split, 1, args, 0, split.length - 1);
 
@@ -67,7 +67,7 @@ public class CommandManager {
 
     public Collection<String> autoComplete(@NotNull String currCmd) {
         String raw = currCmd.substring(1);
-        String split[] = raw.split(" ");
+        String[] split = raw.split(" ");
 
         List<String> ret = new ArrayList<>();
 
@@ -78,11 +78,13 @@ public class CommandManager {
 
             if (currentCommand == null) return ret;
 
-            String args[] = new String[split.length - 1];
+            String[] args = new String[split.length - 1];
 
             System.arraycopy(split, 1, args, 0, split.length - 1);
 
-            return currentCommand.autocomplete(args.length + (currCmd.endsWith(" ") ? 1 : 0), args);
+            List<String> autocomplete = currentCommand.autocomplete(args.length + (currCmd.endsWith(" ") ? 1 : 0), args);
+
+            return autocomplete == null ? new ArrayList<>() : autocomplete;
         } else if (split.length == 1) {
             for (Command command : commands) {
                 ret.addAll(command.getNameAndAliases());

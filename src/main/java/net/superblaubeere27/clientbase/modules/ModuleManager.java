@@ -37,8 +37,13 @@ public class ModuleManager {
     public void addModules() {
         addModule(new DemoModeModule());
         addModule(new SetbackDetector());
-        addModule(new HUD());
+
+        // Register your modules here
+
         addModule(new ClickGUIModule());
+        addModule(new HUD());
+
+        ClickGUIModule.clickGui.init();
     }
 
     private void addModule(@NotNull Module module) {

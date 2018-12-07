@@ -158,15 +158,16 @@ public class ComboBoxUI extends AbstractComponentUI<ModeValue> {
 //    }
 
     @Override
-    public void onMouseClick(int x, int y, int mouseButton) {
+    public boolean onMouseClick(int x, int y, int mouseButton) {
         Point mouse = new Point(x, y);
         Rectangle area = new Rectangle(getX(), getY(), width, height);
 
         if (mouseButton != 0)
-            return;
+            return false;
 
         if (area.contains(mouse)) {
             isSelected = !isSelected;
+            return true;
         } else if (mouse.x <= area.getWidth() + getX() && isSelected) {
             int offset = (int) (area.getHeight() + getY() + 2);
             String[] elements = value.getModes();
@@ -183,6 +184,8 @@ public class ComboBoxUI extends AbstractComponentUI<ModeValue> {
                 }
                 offset += fontRenderer.FONT_HEIGHT + 2;
             }
+            return true;
         }
+        return false;
     }
 }

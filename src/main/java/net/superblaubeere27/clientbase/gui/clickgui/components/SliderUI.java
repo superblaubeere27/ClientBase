@@ -76,7 +76,7 @@ public class SliderUI extends AbstractComponentUI<NumberValue> {
     }
 
     @Override
-    public void onMouseClick(int x, int y, int mouseButton) {
+    public boolean onMouseClick(int x, int y, int mouseButton) {
         if (new Rectangle(getX(), fontRenderer.FONT_HEIGHT + 2 + getY(), getWidth(),
                 getHeight() - fontRenderer.FONT_HEIGHT).contains(x, y) && mouseButton == 0) {
             if (Mouse.isButtonDown(0) && !isValueChanging) {
@@ -84,7 +84,9 @@ public class SliderUI extends AbstractComponentUI<NumberValue> {
             } else if (!Mouse.isButtonDown(0) && isValueChanging) {
                 isValueChanging = false;
             }
+            return true;
         }
+        return false;
     }
 
     @Override

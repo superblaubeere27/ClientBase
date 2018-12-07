@@ -69,7 +69,7 @@ public class BindCommand extends Command {
         String prefix = "";
         boolean flag = false;
 
-        if (arg == 0) {
+        if (arg == 0 || args.length == 0) {
             flag = true;
         } else if (arg == 1) {
             flag = true;

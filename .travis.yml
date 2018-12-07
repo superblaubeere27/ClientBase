@@ -1,3 +1,4 @@
 language: java
 sudo: false
+install: gradle wrapper
 script: gradle clean setupCiWorkspace build

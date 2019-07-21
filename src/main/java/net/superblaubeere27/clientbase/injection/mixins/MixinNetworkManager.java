@@ -34,7 +34,7 @@ public class MixinNetworkManager {
 
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     private void sendPacket(Packet packetIn, CallbackInfo ci) {
-        PacketEvent event = new PacketEvent(EventType.RECIEVE, packetIn);
+        PacketEvent event = new PacketEvent(EventType.SEND, packetIn);
         EventManager.call(event);
 
         if (event.isCancelled()) ci.cancel();

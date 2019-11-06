@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 superblaubeere27
+ * Copyright 2019 superblaubeere27
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -10,35 +10,22 @@
 
 package net.superblaubeere27.clientbase.gui.clickgui;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class Panel {
-    private String panelName;
-
-    private int x;
-    private int y;
+public abstract class AbstractComponent {
+    protected int x;
+    protected int y;
+    protected IRenderer renderer;
     private int width;
     private int height;
+    private boolean sizeChanged;
 
-    private int dragX;
-    private int dragY;
-    private boolean drag;
-
-    @NotNull
-    private List<Button> buttons = new ArrayList<>();
-
-    public Panel(final String panelName, final int x, final int y, final int width) {
-        this.panelName = panelName;
-        this.x = x;
-        this.y = y;
-        this.width = width;
+    public AbstractComponent(IRenderer renderer) {
+        this.renderer = renderer;
     }
 
-    public String getPanelName() {
-        return panelName;
+    public abstract void render();
+
+    public int getEventPriority() {
+        return 0;
     }
 
     public int getX() {
@@ -46,6 +33,8 @@ public class Panel {
     }
 
     public void setX(int x) {
+        if (this.x != x) setSizeChanged(true);
+
         this.x = x;
     }
 
@@ -54,6 +43,8 @@ public class Panel {
     }
 
     public void setY(int y) {
+        if (this.y != y) setSizeChanged(true);
+
         this.y = y;
     }
 
@@ -61,40 +52,48 @@ public class Panel {
         return width;
     }
 
-    public boolean isDrag() {
-        return drag;
+    public void setWidth(int width) {
+        if (this.width != width) setSizeChanged(true);
+
+        this.width = width;
     }
 
-    public void setDrag(boolean drag) {
-        this.drag = drag;
+    public int getHeight() {
+        return height;
     }
 
-    public int getDragX() {
-        return dragX;
+    public void setHeight(int height) {
+        if (this.height != height) setSizeChanged(true);
+
+        this.height = height;
     }
 
-    public void setDragX(int dragX) {
-        this.dragX = dragX;
+    public boolean isSizeChanged() {
+        return sizeChanged;
     }
 
-    public int getDragY() {
-        return dragY;
+    public void setSizeChanged(boolean sizeChanged) {
+        this.sizeChanged = sizeChanged;
     }
 
-    public void setDragY(int dragY) {
-        this.dragY = dragY;
+    public boolean keyPressed(int key, char c) {
+        return false;
     }
 
-    public boolean isHoverHead(final int mouseX, final int mouseY) {
-        return mouseX >= getX() && mouseX <= getX() + getWidth() && mouseY >= getY() && mouseY <= getY() + 20;
+    public boolean mouseReleased(int button, int x, int y, boolean offscreen) {
+        return false;
     }
 
-    public void addButton(final Button button) {
-        buttons.add(button);
+    public boolean mouseMove(int x, int y, boolean offscreen) {
+        return false;
     }
 
-    @NotNull
-    public List<Button> getButtons() {
-        return buttons;
+    public boolean mousePressed(int button, int x, int y, boolean offscreen) {
+        return false;
     }
+
+    public boolean mouseWheel(int change) {
+        return false;
+    }
+
 }

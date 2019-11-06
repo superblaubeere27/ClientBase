@@ -42,8 +42,6 @@ public class ModuleManager {
 
         addModule(new ClickGUIModule());
         addModule(new HUD());
-
-        ClickGUIModule.clickGui.init();
     }
 
     private void addModule(@NotNull Module module) {

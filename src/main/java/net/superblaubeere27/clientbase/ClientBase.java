@@ -36,7 +36,7 @@ public class ClientBase {
     public static ClientBase INSTANCE;
 
     static {
-        List<Character> chars = new ArrayList<>();
+        List<Character> chars = new ArrayList<Character>();
 
         for (char c : CLIENT_NAME.toCharArray())
             if (Character.toUpperCase(c) == c) chars.add(c);
@@ -57,11 +57,25 @@ public class ClientBase {
     private FileManager fileManager;
     public ScriptManager scriptManager;
 
+    private boolean initialized = false;
+
+    public static void checkInitialized() {
+        if (INSTANCE == null) {
+            new ClientBase();
+        }
+
+        if (!INSTANCE.initialized) {
+            INSTANCE.startClient();
+        }
+    }
+
     public ClientBase() {
         INSTANCE = this;
     }
 
     public void startClient() {
+        initialized = true; // First statement to prevent reinitialization when an exception occurrences
+
         scriptManager = new ScriptManager();
         fileManager = new FileManager();
         valueManager = new ValueManager();

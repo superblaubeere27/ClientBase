@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Tab<T> {
     @NotNull
-    private List<SubTab<T>> subTabs = new ArrayList<>();
+    private List<SubTab<T>> subTabs = new ArrayList<SubTab<T>>();
     private String text;
 
     public Tab(String text) {

@@ -55,6 +55,6 @@ public class ScriptCommand extends Command {
 
     @Override
     public List<String> autocomplete(int arg, String[] args) {
-        return new ArrayList<>();
+        return new ArrayList<String>();
     }
 }

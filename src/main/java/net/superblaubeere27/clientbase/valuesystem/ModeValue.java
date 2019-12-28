@@ -13,9 +13,8 @@ package net.superblaubeere27.clientbase.valuesystem;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.superblaubeere27.clientbase.utils.Predicate;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Predicate;
 
 public class ModeValue extends Value<Integer> {
     private String[] modes;

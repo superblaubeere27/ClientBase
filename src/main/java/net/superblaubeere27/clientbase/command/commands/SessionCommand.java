@@ -14,8 +14,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
 import net.superblaubeere27.clientbase.command.Command;
 import net.superblaubeere27.clientbase.command.CommandException;
-import net.superblaubeere27.clientbase.injection.interfaces.IMixinMinecraft;
 import net.superblaubeere27.clientbase.utils.ChatUtils;
+import net.superblaubeere27.clientbase.utils.Utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -35,7 +35,7 @@ public class SessionCommand extends Command {
             throw new CommandException("Usage: ." + alias + "<copy/cliArgs/load> or <session>");
         }
         if (args[0].equalsIgnoreCase("copy")) {
-            Session session = ((IMixinMinecraft) Minecraft.getMinecraft()).getSession();
+            Session session = Minecraft.getMinecraft().getSession();
 
             String text = session.getUsername() + "/" + session.getPlayerID() + "/" + session.getToken();
 
@@ -48,7 +48,7 @@ public class SessionCommand extends Command {
                 throw new CommandException("Failed to copy to clipboard: " + e);
             }
         } else if (args[0].equalsIgnoreCase("cliArgs")) {
-            Session session = ((IMixinMinecraft) Minecraft.getMinecraft()).getSession();
+            Session session = Minecraft.getMinecraft().getSession();
 
             String text = "--username " + session.getUsername() + " --uuid " + session.getPlayerID() + " --accessToken " + session.getToken();
 
@@ -67,7 +67,13 @@ public class SessionCommand extends Command {
                 throw new CommandException("Invalid session format. (username/uuid/accessToken)");
             }
 
-            ((IMixinMinecraft) Minecraft.getMinecraft()).setSession(new Session(split[0], split[1], split[2], "mojang"));
+            try {
+                Utils.setSession(new Session(split[0], split[1], split[2], "mojang"));
+            } catch (NoSuchFieldException e) {
+                throw new CommandException(e.toString());
+            } catch (IllegalAccessException e) {
+                throw new CommandException(e.toString());
+            }
             ChatUtils.success("Session loaded");
         }
     }
@@ -75,6 +81,6 @@ public class SessionCommand extends Command {
     @NotNull
     @Override
     public List<String> autocomplete(int arg, String[] args) {
-        return arg == 1 ? java.util.Arrays.asList("copy", "cliArgs", "load") : new ArrayList<>();
+        return arg == 1 ? java.util.Arrays.asList("copy", "cliArgs", "load") : new ArrayList<String>();
     }
 }

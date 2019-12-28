@@ -37,7 +37,7 @@ public abstract class Command {
     }
 
     @NotNull List<String> getNameAndAliases() {
-        List<String> l = new ArrayList<>();
+        List<String> l = new ArrayList<String>();
         l.add(name);
         l.addAll(Arrays.asList(aliases));
 

@@ -21,14 +21,14 @@ import java.util.Map;
 
 public class ValueManager {
     @NotNull
-    private HashMap<String, List<Value>> valueMap = new HashMap<>();
+    private HashMap<String, List<Value>> valueMap = new HashMap<String, List<Value>>();
 
     /**
      * @param name   The name of the owner
      * @param object The object where value-fields are declared
      */
     public void registerObject(String name, @NotNull Object object) {
-        List<Value> values = new ArrayList<>();
+        List<Value> values = new ArrayList<Value>();
         for (final Field field : object.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
@@ -73,7 +73,16 @@ public class ValueManager {
 
         if (found == null) return null;
 
-        return found.stream().filter(val -> name.equalsIgnoreCase(val.getName())).findFirst().orElse(null);
+        Value result = null;
+
+        for (Value val : found) {
+            if (name.equalsIgnoreCase(val.getName())) {
+                result = val;
+                break;
+            }
+        }
+
+        return result;
     }
 
 }

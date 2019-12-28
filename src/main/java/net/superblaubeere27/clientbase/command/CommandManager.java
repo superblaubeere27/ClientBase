@@ -17,11 +17,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CommandManager {
     @NotNull
-    private List<Command> commands = new ArrayList<>();
+    private List<Command> commands = new ArrayList<Command>();
 
     public void addCommands() {
         addCommand(new ToggleCommand());
@@ -45,11 +44,17 @@ public class CommandManager {
 
         String cmdName = split[0];
 
-        Command command = commands.stream().filter(cmd -> cmd.match(cmdName)).findFirst().orElse(null);
+        Command command = null;
+        for (Command cmd : commands) {
+            if (cmd.match(cmdName)) {
+                command = cmd;
+                break;
+            }
+        }
 
         try {
             if (command == null) {
-                ChatUtils.send("§c'" + cmdName + "' doesn't exist");
+                ChatUtils.send("\u00a7c'" + cmdName + "' doesn't exist");
                 return false;
             } else {
                 String[] args = new String[split.length - 1];
@@ -60,7 +65,7 @@ public class CommandManager {
                 return true;
             }
         } catch (CommandException e) {
-            ChatUtils.send("§c" + e.getMessage());
+            ChatUtils.send("\u00a7c" + e.getMessage());
         }
         return true;
     }
@@ -69,10 +74,22 @@ public class CommandManager {
         String raw = currCmd.substring(1);
         String[] split = raw.split(" ");
 
-        List<String> ret = new ArrayList<>();
+        List<String> ret = new ArrayList<String>();
 
 
-        Command currentCommand = split.length >= 1 ? commands.stream().filter(cmd -> cmd.match(split[0])).findFirst().orElse(null) : null;
+        Command currentCommand;
+        if (split.length >= 1) {
+            Command found = null;
+            for (Command cmd : commands) {
+                if (cmd.match(split[0])) {
+                    found = cmd;
+                    break;
+                }
+            }
+            currentCommand = found;
+        } else {
+            currentCommand = null;
+        }
 
         if (split.length >= 2 || currentCommand != null && currCmd.endsWith(" ")) {
 
@@ -84,13 +101,20 @@ public class CommandManager {
 
             List<String> autocomplete = currentCommand.autocomplete(args.length + (currCmd.endsWith(" ") ? 1 : 0), args);
 
-            return autocomplete == null ? new ArrayList<>() : autocomplete;
+            return autocomplete == null ? new ArrayList<String>() : autocomplete;
         } else if (split.length == 1) {
             for (Command command : commands) {
                 ret.addAll(command.getNameAndAliases());
             }
 
-            return ret.stream().map(str -> "." + str).filter(str -> str.toLowerCase().startsWith(currCmd.toLowerCase())).collect(Collectors.toList());
+            List<String> list = new ArrayList<String>();
+            for (String str : ret) {
+                String s = "." + str;
+                if (s.toLowerCase().startsWith(currCmd.toLowerCase())) {
+                    list.add(s);
+                }
+            }
+            return list;
         }
 
         return ret;

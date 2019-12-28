@@ -185,7 +185,7 @@ public class GridLayout implements ILayoutManager {
             rowHeight[i] = maxHeight;
         }
 
-        HashMap<AbstractComponent, int[]> layout = new HashMap<>();
+        HashMap<AbstractComponent, int[]> layout = new HashMap<AbstractComponent, int[]>();
 
         int currX = verticalPadding;
 

@@ -13,10 +13,9 @@ package net.superblaubeere27.clientbase.valuesystem;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import net.superblaubeere27.clientbase.utils.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Predicate;
 
 public class NumberValue<T extends Number> extends Value<T> {
     private T min;
@@ -26,8 +25,18 @@ public class NumberValue<T extends Number> extends Value<T> {
         this(name, defaultVal, min, max, null);
     }
 
-    public NumberValue(String name, T defaultVal, @NotNull T min, @NotNull T max, @Nullable Predicate<T> validator) {
-        super(name, defaultVal, validator == null ? val -> val.doubleValue() >= min.doubleValue() && val.doubleValue() <= max.doubleValue() : validator.and(val -> val.doubleValue() >= min.doubleValue() && val.doubleValue() <= max.doubleValue()));
+    public NumberValue(String name, T defaultVal, @NotNull final T min, @NotNull final T max, @Nullable Predicate<T> validator) {
+        super(name, defaultVal, validator == null ? new Predicate<T>() {
+            @Override
+            public boolean test(T val) {
+                return val.doubleValue() >= min.doubleValue() && val.doubleValue() <= max.doubleValue();
+            }
+        } : validator.and(new Predicate<T>() {
+            @Override
+            public boolean test(T val) {
+                return val.doubleValue() >= min.doubleValue() && val.doubleValue() <= max.doubleValue();
+            }
+        }));
         this.min = min;
         this.max = max;
     }

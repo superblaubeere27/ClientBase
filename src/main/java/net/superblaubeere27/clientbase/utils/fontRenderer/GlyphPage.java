@@ -28,7 +28,7 @@ public class GlyphPage {
     private Font font;
     private boolean antiAliasing;
     private boolean fractionalMetrics;
-    private HashMap<Character, Glyph> glyphCharacterMap = new HashMap<>();
+    private HashMap<Character, Glyph> glyphCharacterMap = new HashMap<Character, Glyph>();
 
     private BufferedImage bufferedImage;
     private DynamicTexture loadedTexture;

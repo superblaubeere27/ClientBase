@@ -182,7 +182,7 @@ public final class EventManager {
      * @param indexClass The Event class index in the HashMap of the List to sort.
      */
     private static void sortListValue(Class<? extends Event> indexClass) {
-        List<MethodData> sortedList = new CopyOnWriteArrayList<>();
+        List<MethodData> sortedList = new CopyOnWriteArrayList<MethodData>();
 
         for (final byte priority : Priority.VALUE_ARRAY) {
             for (final MethodData data : REGISTRY_MAP.get(indexClass)) {

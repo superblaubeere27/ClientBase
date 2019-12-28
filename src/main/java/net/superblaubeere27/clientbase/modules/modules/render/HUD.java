@@ -33,21 +33,20 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HUD extends Module {
     @NotNull
-    private TabGui<Module> tabGui = new TabGui<>();
+    private TabGui<Module> tabGui = new TabGui<Module>();
     @NotNull
-    private List<Integer> fps = new ArrayList<>();
+    private List<Integer> fps = new ArrayList<Integer>();
 
     @NotNull
-    private NumberValue<Integer> fpsStatisticLength = new NumberValue<>("FPSStatisticLength", 250, 10, 500);
+    private NumberValue<Integer> fpsStatisticLength = new NumberValue<Integer>("FPSStatisticLength", 250, 10, 500);
 
+    // Since we are using a JRE > 10 to run the client this classes will be available at runtime.
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -56,25 +55,43 @@ public class HUD extends Module {
         setState(true);
 
 
-        HashMap<ModuleCategory, java.util.List<Module>> moduleCategoryMap = new HashMap<>();
+        HashMap<ModuleCategory, java.util.List<Module>> moduleCategoryMap = new HashMap<ModuleCategory, List<Module>>();
 
         for (Module module : ClientBase.INSTANCE.moduleManager.getModules()) {
             if (!moduleCategoryMap.containsKey(module.getCategory())) {
-                moduleCategoryMap.put(module.getCategory(), new ArrayList<>());
+                moduleCategoryMap.put(module.getCategory(), new ArrayList<Module>());
             }
 
             moduleCategoryMap.get(module.getCategory()).add(module);
         }
 
-        moduleCategoryMap.entrySet().stream().sorted(Comparator.comparingInt(cat -> cat.getKey().toString().hashCode())).forEach(cat -> {
-            Tab<Module> tab = new Tab<>(cat.getKey().toString());
+        List<Map.Entry<ModuleCategory, List<Module>>> toSort = new ArrayList<Map.Entry<ModuleCategory, List<Module>>>();
+        for (Map.Entry<ModuleCategory, List<Module>> cat : moduleCategoryMap.entrySet()) {
+            toSort.add(cat);
+        }
+        Collections.sort(toSort, new Comparator<Map.Entry<ModuleCategory, List<Module>>>() {
+            @Override
+            public int compare(Map.Entry<ModuleCategory, List<Module>> o1, Map.Entry<ModuleCategory, List<Module>> o2) {
+                int x = o1.getKey().toString().hashCode();
+                int y = o2.getKey().toString().hashCode();
+
+                return (x < y) ? -1 : ((x == y) ? 0 : 1);
+            }
+        });
+        for (Map.Entry<ModuleCategory, List<Module>> cat : toSort) {
+            Tab<Module> tab = new Tab<Module>(cat.getKey().toString());
 
             for (Module module : cat.getValue()) {
-                tab.addSubTab(new SubTab<>(module.getName(), subTab -> subTab.getObject().setState(!subTab.getObject().getState()), module));
+                tab.addSubTab(new SubTab<Module>(module.getName(), new SubTab.TabActionListener<Module>() {
+                    @Override
+                    public void onClick(SubTab<Module> subTab) {
+                        subTab.getObject().setState(!subTab.getObject().getState());
+                    }
+                }, module));
             }
 
             tabGui.addTab(tab);
-        });
+        }
 
     }
 
@@ -93,7 +110,7 @@ public class HUD extends Module {
             fps.remove(0);
         }
 
-        FontRenderer fontRenderer = mc.fontRendererObj;
+        final FontRenderer fontRenderer = mc.fontRendererObj;
 
         ScaledResolution res = new ScaledResolution(mc);
 
@@ -127,18 +144,42 @@ public class HUD extends Module {
         AtomicInteger offset = new AtomicInteger(3);
         AtomicInteger index = new AtomicInteger();
 
-        ClientBase.INSTANCE.moduleManager.getModules().stream().filter(mod -> mod.getState() && !mod.isHidden()).sorted(Comparator.comparingInt(mod -> -fontRenderer.getStringWidth(mod.getName()))).forEach(mod -> {
+        List<Module> toSort = new ArrayList<Module>();
+        for (Module mod : ClientBase.INSTANCE.moduleManager.getModules()) {
+            if (mod.getState() && !mod.isHidden()) {
+                toSort.add(mod);
+            }
+        }
+
+        Collections.sort(toSort, new Comparator<Module>() {
+            @Override
+            public int compare(Module o1, Module o2) {
+                int x = -fontRenderer.getStringWidth(o1.getName());
+                int y = -fontRenderer.getStringWidth(o2.getName());
+
+                return (x < y) ? -1 : ((x == y) ? 0 : 1);
+            }
+        });
+        for (Module mod : toSort) {
             fontRenderer.drawString(mod.getName(), res.getScaledWidth() - fontRenderer.getStringWidth(mod.getName()) - 3, offset.get(), rainbow(index.get() * 100), true);
 
             offset.addAndGet(fontRenderer.FONT_HEIGHT + 2);
             index.getAndIncrement();
-        });
+        }
 
         NotificationManager.render();
         tabGui.render(5, (2 + fontRenderer.FONT_HEIGHT) * 3);
 
 
-        int max = fps.stream().max(Integer::compareTo).orElse(1);
+        boolean seen = false;
+        Integer best = null;
+        for (Integer fp : fps) {
+            if (!seen || fp.compareTo(best) > 0) {
+                seen = true;
+                best = fp;
+            }
+        }
+        int max = seen ? best : 1;
         double transform = blackBarHeight / 2.0 / (double) max;
 
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);

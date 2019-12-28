@@ -18,8 +18,8 @@ import net.superblaubeere27.clientbase.gui.clickgui.layout.Layout;
 import java.util.*;
 
 public class Pane extends AbstractComponent {
-    protected List<AbstractComponent> components = new ArrayList<>();
-    protected Map<AbstractComponent, int[]> componentLocations = new HashMap<>();
+    protected List<AbstractComponent> components = new ArrayList<AbstractComponent>();
+    protected Map<AbstractComponent, int[]> componentLocations = new HashMap<AbstractComponent, int[]>();
     protected Layout layout;
     private ILayoutManager layoutManager;
 
@@ -96,11 +96,22 @@ public class Pane extends AbstractComponent {
     public boolean mouseMove(int x, int y, boolean offscreen) {
         final boolean[] consumed = {false};
 
-        components.stream().sorted(Comparator.comparingInt(AbstractComponent::getEventPriority)).forEach(component -> {
+        List<AbstractComponent> toSort = new ArrayList<AbstractComponent>(components);
+
+        Collections.sort(toSort, new Comparator<AbstractComponent>() {
+            @Override
+            public int compare(AbstractComponent o1, AbstractComponent o2) {
+                int x = o1.getEventPriority();
+                int y = o2.getEventPriority();
+
+                return (x < y) ? -1 : ((x == y) ? 0 : 1);
+            }
+        });
+        for (AbstractComponent component : toSort) {
             if (!consumed[0])
                 if (component.mouseMove(x, y, offscreen))
                     consumed[0] = true;
-        });
+        }
 
         return consumed[0];
     }
@@ -109,11 +120,23 @@ public class Pane extends AbstractComponent {
     public boolean mousePressed(int button, int x, int y, boolean offscreen) {
         final boolean[] consumed = {false};
 
-        components.stream().sorted(Comparator.comparingInt(AbstractComponent::getEventPriority)).forEach(component -> {
+        List<AbstractComponent> toSort = new ArrayList<AbstractComponent>(components);
+
+        Collections.sort(toSort, new Comparator<AbstractComponent>() {
+            @Override
+            public int compare(AbstractComponent o1, AbstractComponent o2) {
+                int x = o2.getEventPriority();
+                int y = o2.getEventPriority();
+
+                return (x < y) ? -1 : ((x == y) ? 0 : 1);
+            }
+        });
+
+        for (AbstractComponent component : toSort) {
             if (!consumed[0])
                 if (component.mousePressed(button, x, y, offscreen))
                     consumed[0] = true;
-        });
+        }
 
         return consumed[0];
     }
@@ -122,11 +145,22 @@ public class Pane extends AbstractComponent {
     public boolean mouseReleased(int button, int x, int y, boolean offscreen) {
         final boolean[] consumed = {false};
 
-        components.stream().sorted(Comparator.comparingInt(AbstractComponent::getEventPriority)).forEach(component -> {
+        List<AbstractComponent> toSort = new ArrayList<AbstractComponent>(components);
+        Collections.sort(toSort, new Comparator<AbstractComponent>() {
+            @Override
+            public int compare(AbstractComponent o1, AbstractComponent o2) {
+                int x = o1.getEventPriority();
+                int y = o2.getEventPriority();
+
+                return (x < y) ? -1 : ((x == y) ? 0 : 1);
+            }
+        });
+
+        for (AbstractComponent component : toSort) {
             if (!consumed[0])
                 if (component.mouseReleased(button, x, y, offscreen))
                     consumed[0] = true;
-        });
+        }
 
         return consumed[0];
     }
@@ -135,11 +169,22 @@ public class Pane extends AbstractComponent {
     public boolean keyPressed(int key, char c) {
         final boolean[] consumed = {false};
 
-        components.stream().sorted(Comparator.comparingInt(AbstractComponent::getEventPriority)).forEach(component -> {
+        List<AbstractComponent> toSort = new ArrayList<AbstractComponent>(components);
+        Collections.sort(toSort, new Comparator<AbstractComponent>() {
+            @Override
+            public int compare(AbstractComponent o1, AbstractComponent o2) {
+                int x = o1.getEventPriority();
+                int y = o2.getEventPriority();
+
+                return (x < y) ? -1 : ((x == y) ? 0 : 1);
+            }
+        });
+
+        for (AbstractComponent component : toSort) {
             if (!consumed[0])
                 if (component.keyPressed(key, c))
                     consumed[0] = true;
-        });
+        }
 
         return consumed[0];
     }

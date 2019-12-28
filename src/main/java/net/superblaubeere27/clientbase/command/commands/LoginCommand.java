@@ -14,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Session;
 import net.superblaubeere27.clientbase.command.Command;
 import net.superblaubeere27.clientbase.command.CommandException;
-import net.superblaubeere27.clientbase.injection.interfaces.IMixinMinecraft;
 import net.superblaubeere27.clientbase.utils.ChatUtils;
 import net.superblaubeere27.clientbase.utils.Utils;
 import org.jetbrains.annotations.NotNull;
@@ -56,7 +55,7 @@ public class LoginCommand extends Command {
         try {
             Session session = Utils.createSession(username, password, Proxy.NO_PROXY);
 
-            ((IMixinMinecraft) Minecraft.getMinecraft()).setSession(session);
+            Utils.setSession(session);
 
             ChatUtils.success("Logged in. New IGN: " + session.getUsername());
         } catch (Exception e) {
@@ -68,6 +67,6 @@ public class LoginCommand extends Command {
     @NotNull
     @Override
     public List<String> autocomplete(int arg, String[] args) {
-        return new ArrayList<>();
+        return new ArrayList<String>();
     }
 }

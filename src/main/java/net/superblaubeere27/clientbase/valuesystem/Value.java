@@ -11,8 +11,7 @@
 package net.superblaubeere27.clientbase.valuesystem;
 
 import com.google.gson.JsonObject;
-
-import java.util.function.Predicate;
+import net.superblaubeere27.clientbase.utils.Predicate;
 
 public abstract class Value<T> {
     private String name;

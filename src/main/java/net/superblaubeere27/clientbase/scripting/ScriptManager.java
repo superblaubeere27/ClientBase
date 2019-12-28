@@ -23,7 +23,6 @@ import javax.script.ScriptException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -168,7 +167,7 @@ public class ScriptManager {
         String scriptContent;
 
         try {
-            scriptContent = new String(ByteStreams.toByteArray(file.getInputStream(entry)), StandardCharsets.UTF_8);
+            scriptContent = new String(ByteStreams.toByteArray(file.getInputStream(entry)), "UTF-8");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ToggleCommand extends Command {
 
@@ -62,8 +61,19 @@ public class ToggleCommand extends Command {
         }
 
         if (flag) {
-            String finalPrefix = prefix;
-            return ClientBase.INSTANCE.moduleManager.getModules().stream().filter(mod -> mod.getName().toLowerCase().startsWith(finalPrefix)).map(Module::getName).collect(Collectors.toList());
-        } else return new ArrayList<>();
+            return getStrings(prefix);
+        } else return new ArrayList<String>();
+    }
+
+    @NotNull
+    static List<String> getStrings(String finalPrefix) {
+        List<String> list = new ArrayList<String>();
+        for (Module mod : ClientBase.INSTANCE.moduleManager.getModules()) {
+            if (mod.getName().toLowerCase().startsWith(finalPrefix)) {
+                String name = mod.getName();
+                list.add(name);
+            }
+        }
+        return list;
     }
 }

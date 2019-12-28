@@ -14,9 +14,9 @@ import net.superblaubeere27.clientbase.gui.clickgui.AbstractComponent;
 import net.superblaubeere27.clientbase.gui.clickgui.IRenderer;
 import net.superblaubeere27.clientbase.gui.clickgui.Utils;
 import net.superblaubeere27.clientbase.gui.clickgui.Window;
+import net.superblaubeere27.clientbase.utils.Function;
 
 import java.util.Locale;
-import java.util.function.Function;
 
 public class Slider extends AbstractComponent {
     private static final int PREFERRED_WIDTH = 180;
@@ -145,10 +145,30 @@ public class Slider extends AbstractComponent {
     }
 
     public enum NumberType {
-        PERCENT(number -> String.format(Locale.ENGLISH, "%.1f%%", number.floatValue())),
-        TIME(number -> Utils.formatTime(number.longValue())),
-        DECIMAL(number -> String.format(Locale.ENGLISH, "%.4f", number.floatValue())),
-        INTEGER(number -> Long.toString(number.longValue()));
+        PERCENT(new Function<Number, String>() {
+            @Override
+            public String apply(Number number) {
+                return String.format(Locale.ENGLISH, "%.1f%%", number.floatValue());
+            }
+        }),
+        TIME(new Function<Number, String>() {
+            @Override
+            public String apply(Number number) {
+                return Utils.formatTime(number.longValue());
+            }
+        }),
+        DECIMAL(new Function<Number, String>() {
+            @Override
+            public String apply(Number number) {
+                return String.format(Locale.ENGLISH, "%.4f", number.floatValue());
+            }
+        }),
+        INTEGER(new Function<Number, String>() {
+            @Override
+            public String apply(Number number) {
+                return Long.toString(number.longValue());
+            }
+        });
 
         private Function<Number, String> formatter;
 

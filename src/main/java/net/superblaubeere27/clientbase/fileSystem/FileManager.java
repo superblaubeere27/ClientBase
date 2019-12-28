@@ -22,7 +22,6 @@ import net.superblaubeere27.clientbase.valuesystem.Value;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,7 @@ public class FileManager {
         if (!saveFile.exists() && !saveFile.createNewFile())
             throw new IOException("Failed to create " + saveFile.getAbsolutePath());
 
-        Files.write(toJsonObject().toString().getBytes(StandardCharsets.UTF_8), saveFile);
+        Files.write(toJsonObject().toString().getBytes("UTF-8"), saveFile);
     }
 
     @NotNull
@@ -94,7 +93,7 @@ public class FileManager {
     public void load() {
         if (!saveFile.exists()) return;
 
-        List<String> backupReasons = new ArrayList<>();
+        List<String> backupReasons = new ArrayList<String>();
 
         try {
             JsonObject object = (JsonObject) new JsonParser().parse(new InputStreamReader(new FileInputStream(saveFile)));
@@ -232,7 +231,7 @@ public class FileManager {
             outputStream.closeEntry();
 
             outputStream.putNextEntry(new ZipEntry("reason.txt"));
-            outputStream.write(reason.toString().getBytes(StandardCharsets.UTF_8));
+            outputStream.write(reason.toString().getBytes("UTF-8"));
             outputStream.closeEntry();
 
             outputStream.close();
@@ -246,7 +245,12 @@ public class FileManager {
     public void loadScripts() {
         if (!scriptsDir.exists()) scriptsDir.mkdirs();
 
-        File[] files = scriptsDir.listFiles(pathname -> pathname.getName().endsWith("zip") || pathname.getName().endsWith("cbs"));
+        File[] files = scriptsDir.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.getName().endsWith("zip") || pathname.getName().endsWith("cbs");
+            }
+        });
 
         if (files != null) {
             for (File file : files) {

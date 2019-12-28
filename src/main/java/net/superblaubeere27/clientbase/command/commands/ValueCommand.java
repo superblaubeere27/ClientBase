@@ -96,6 +96,6 @@ public class ValueCommand extends Command {
     @NotNull
     @Override
     public List<String> autocomplete(int arg, String[] args) {
-        return new ArrayList<>();
+        return new ArrayList<String>();
     }
 }

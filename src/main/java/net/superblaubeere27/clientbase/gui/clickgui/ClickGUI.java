@@ -10,6 +10,7 @@ import net.superblaubeere27.clientbase.gui.clickgui.layout.FlowLayout;
 import net.superblaubeere27.clientbase.gui.clickgui.layout.GridLayout;
 import net.superblaubeere27.clientbase.modules.Module;
 import net.superblaubeere27.clientbase.modules.ModuleCategory;
+import net.superblaubeere27.clientbase.utils.Function;
 import net.superblaubeere27.clientbase.utils.fontRenderer.GlyphPageFontRenderer;
 import net.superblaubeere27.clientbase.valuesystem.BooleanValue;
 import net.superblaubeere27.clientbase.valuesystem.ModeValue;
@@ -26,13 +27,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.superblaubeere27.clientbase.utils.Utils.getPoint;
+
 public class ClickGUI extends GuiScreen {
     private final GlyphPageFontRenderer consolas;
     private final Pane spoilerPane;
     private final HashMap<ModuleCategory, Pane> categoryPaneMap;
     private Window window;
     private IRenderer renderer;
-    private List<ActionEventListener> onRenderListeners = new ArrayList<>();
+    private List<ActionEventListener> onRenderListeners = new ArrayList<ActionEventListener>();
 
     public ClickGUI() {
         consolas = GlyphPageFontRenderer.create("Consolas", 15, false, false, false);
@@ -44,83 +47,122 @@ public class ClickGUI extends GuiScreen {
 
         Pane buttonPane = new Pane(renderer, new FlowLayout());
 
-        HashMap<ModuleCategory, List<Module>> moduleCategoryMap = new HashMap<>();
-        categoryPaneMap = new HashMap<>();
+        HashMap<ModuleCategory, List<Module>> moduleCategoryMap = new HashMap<ModuleCategory, List<Module>>();
+        categoryPaneMap = new HashMap<ModuleCategory, Pane>();
 
         for (Module module : ClientBase.INSTANCE.moduleManager.getModules()) {
             if (!moduleCategoryMap.containsKey(module.getCategory())) {
-                moduleCategoryMap.put(module.getCategory(), new ArrayList<>());
+                moduleCategoryMap.put(module.getCategory(), new ArrayList<Module>());
             }
 
             moduleCategoryMap.get(module.getCategory()).add(module);
         }
 
-        HashMap<ModuleCategory, Pane> paneMap = new HashMap<>();
+        HashMap<ModuleCategory, Pane> paneMap = new HashMap<ModuleCategory, Pane>();
 
-        List<Spoiler> spoilers = new ArrayList<>();
-        List<Pane> paneList = new ArrayList<>();
+        List<Spoiler> spoilers = new ArrayList<Spoiler>();
+        List<Pane> paneList = new ArrayList<Pane>();
 
         for (Map.Entry<ModuleCategory, List<Module>> moduleCategoryListEntry : moduleCategoryMap.entrySet()) {
             Pane spoilerPane = new Pane(renderer, new GridLayout(1));
 
 
-            for (Module module : moduleCategoryListEntry.getValue()) {
+            for (final Module module : moduleCategoryListEntry.getValue()) {
                 Pane settingPane = new Pane(renderer, new GridLayout(4));
 
                 {
                     settingPane.addComponent(new Label(renderer, "State"));
-                    CheckBox cb;
+                    final CheckBox cb;
                     settingPane.addComponent(cb = new CheckBox(renderer, "Enabled"));
-                    onRenderListeners.add(() -> cb.setSelected(module.getState()));
-                    cb.setListener(val -> {
-                        module.setState(val);
-                        return true;
+                    onRenderListeners.add(new ActionEventListener() {
+                        @Override
+                        public void onActionEvent() {
+                            cb.setSelected(module.getState());
+                        }
+                    });
+                    cb.setListener(new ValueChangeListener<Boolean>() {
+                        @Override
+                        public boolean onValueChange(Boolean val) {
+                            module.setState(val);
+                            return true;
+                        }
                     });
                 }
                 {
                     settingPane.addComponent(new Label(renderer, "Keybind"));
-                    KeybindButton kb;
-                    settingPane.addComponent(kb = new KeybindButton(renderer, Keyboard::getKeyName));
-                    onRenderListeners.add(() -> kb.setValue(module.getKeybind()));
+                    final KeybindButton kb;
+                    settingPane.addComponent(kb = new KeybindButton(renderer, new Function<Integer, String>() {
+                        @Override
+                        public String apply(Integer key) {
+                            return Keyboard.getKeyName(key);
+                        }
+                    }));
+                    onRenderListeners.add(new ActionEventListener() {
+                        @Override
+                        public void onActionEvent() {
+                            kb.setValue(module.getKeybind());
+                        }
+                    });
 
-                    kb.setListener(val -> {
-                        module.setKeybind(val);
-                        System.out.println();
-                        return true;
+                    kb.setListener(new ValueChangeListener<Integer>() {
+                        @Override
+                        public boolean onValueChange(Integer val) {
+                            module.setKeybind(val);
+                            System.out.println();
+                            return true;
+                        }
                     });
                 }
 
                 List<Value> values = ClientBase.INSTANCE.valueManager.getAllValuesFrom(module.getName());
 
                 if (values != null) {
-                    for (Value value : values) {
+                    for (final Value value : values) {
                         if (value instanceof BooleanValue) {
                             settingPane.addComponent(new Label(renderer, value.getName()));
 
-                            CheckBox cb;
+                            final CheckBox cb;
 
                             settingPane.addComponent(cb = new CheckBox(renderer, "Enabled"));
-                            cb.setListener(value::setObject);
-                            onRenderListeners.add(() -> cb.setSelected(((BooleanValue) value).getObject()));
+                            cb.setListener(new ValueChangeListener<Boolean>() {
+                                @Override
+                                public boolean onValueChange(Boolean object) {
+                                    return value.setObject(object);
+                                }
+                            });
+                            onRenderListeners.add(new ActionEventListener() {
+                                @Override
+                                public void onActionEvent() {
+                                    cb.setSelected(((BooleanValue) value).getObject());
+                                }
+                            });
                         }
                         if (value instanceof ModeValue) {
                             settingPane.addComponent(new Label(renderer, value.getName()));
 
-                            ComboBox cb;
+                            final ComboBox cb;
 
                             settingPane.addComponent(cb = new ComboBox(renderer, ((ModeValue) value).getModes(), ((ModeValue) value).getObject()));
-                            cb.setListener(object -> {
-                                value.setObject(object);
+                            cb.setListener(new ValueChangeListener<Integer>() {
+                                @Override
+                                public boolean onValueChange(Integer object) {
+                                    value.setObject(object);
 
-                                System.out.println("lol");
-                                return true;
+                                    System.out.println("lol");
+                                    return true;
+                                }
                             });
-                            onRenderListeners.add(() -> cb.setSelectedIndex(((ModeValue) value).getObject()));
+                            onRenderListeners.add(new ActionEventListener() {
+                                @Override
+                                public void onActionEvent() {
+                                    cb.setSelectedIndex(((ModeValue) value).getObject());
+                                }
+                            });
                         }
                         if (value instanceof NumberValue) {
                             settingPane.addComponent(new Label(renderer, value.getName()));
 
-                            Slider cb;
+                            final Slider cb;
 
                             Slider.NumberType type = Slider.NumberType.DECIMAL;
 
@@ -133,24 +175,32 @@ public class ClickGUI extends GuiScreen {
                             }
 
                             settingPane.addComponent(cb = new Slider(renderer, ((Number) value.getObject()).doubleValue(), ((NumberValue) value).getMin().doubleValue(), ((NumberValue) value).getMax().doubleValue(), type));
-                            cb.setListener(val -> {
-                                if (value.getObject() instanceof Integer) {
-                                    value.setObject(val.intValue());
-                                }
-                                if (value.getObject() instanceof Float) {
-                                    value.setObject(val.floatValue());
-                                }
-                                if (value.getObject() instanceof Long) {
-                                    value.setObject(val.longValue());
-                                }
-                                if (value.getObject() instanceof Double) {
-                                    value.setObject(val.doubleValue());
-                                }
+                            cb.setListener(new ValueChangeListener<Number>() {
+                                @Override
+                                public boolean onValueChange(Number val) {
+                                    if (value.getObject() instanceof Integer) {
+                                        value.setObject(val.intValue());
+                                    }
+                                    if (value.getObject() instanceof Float) {
+                                        value.setObject(val.floatValue());
+                                    }
+                                    if (value.getObject() instanceof Long) {
+                                        value.setObject(val.longValue());
+                                    }
+                                    if (value.getObject() instanceof Double) {
+                                        value.setObject(val.doubleValue());
+                                    }
 
-                                return true;
+                                    return true;
+                                }
                             });
 
-                            onRenderListeners.add(() -> cb.setValue(((Number) value.getObject()).doubleValue()));
+                            onRenderListeners.add(new ActionEventListener() {
+                                @Override
+                                public void onActionEvent() {
+                                    cb.setValue(((Number) value.getObject()).doubleValue());
+                                }
+                            });
                         }
                     }
                 }
@@ -173,10 +223,15 @@ public class ClickGUI extends GuiScreen {
         spoilerPane = new Pane(renderer, new GridLayout(1));
 
 
-        for (ModuleCategory moduleCategory : categoryPaneMap.keySet()) {
+        for (final ModuleCategory moduleCategory : categoryPaneMap.keySet()) {
             Button button;
             buttonPane.addComponent(button = new Button(renderer, moduleCategory.toString()));
-            button.setOnClickListener(() -> setCurrentCategory(moduleCategory));
+            button.setOnClickListener(new ActionEventListener() {
+                @Override
+                public void onActionEvent() {
+                    ClickGUI.this.setCurrentCategory(moduleCategory);
+                }
+            });
         }
 
         conentPane.addComponent(buttonPane);
@@ -219,7 +274,7 @@ public class ClickGUI extends GuiScreen {
             onRenderListener.onActionEvent();
         }
 
-        Point point = Utils.calculateMouseLocation();
+        Point point = getPoint();
         window.mouseMoved(point.x * 2, point.y * 2);
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         GL11.glLineWidth(1.0f);

@@ -18,7 +18,7 @@ import java.util.List;
 public class Script {
     private String name;
     private String version;
-    private List<ScriptModule> modules = new ArrayList<>();
+    private List<ScriptModule> modules = new ArrayList<ScriptModule>();
 
     public Script(String name, String version) {
         this.name = name;

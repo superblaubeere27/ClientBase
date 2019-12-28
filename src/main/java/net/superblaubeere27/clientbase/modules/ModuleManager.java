@@ -27,7 +27,7 @@ import java.util.List;
 public class ModuleManager {
 
     @NotNull
-    private List<Module> modules = new ArrayList<>();
+    private List<Module> modules = new ArrayList<Module>();
 
     public ModuleManager() {
         EventManager.register(this);
@@ -55,13 +55,22 @@ public class ModuleManager {
         return modules;
     }
 
-    @NotNull
     public <T extends Module> T getModule(Class<T> clazz) {
-        return (T) modules.stream().filter(mod -> mod.getClass() == clazz).findFirst().orElse(null);
+        for (Module mod : modules) {
+            if (mod.getClass() == clazz) {
+                return (T) mod;
+            }
+        }
+        return (T) null;
     }
 
     public Module getModule(@NotNull String name, boolean caseSensitive) {
-        return modules.stream().filter(mod -> !caseSensitive && name.equalsIgnoreCase(mod.getName()) || name.equals(mod.getName())).findFirst().orElse(null);
+        for (Module mod : modules) {
+            if (!caseSensitive && name.equalsIgnoreCase(mod.getName()) || name.equals(mod.getName())) {
+                return mod;
+            }
+        }
+        return null;
     }
 
     @EventTarget

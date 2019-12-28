@@ -14,6 +14,7 @@ import net.superblaubeere27.clientbase.gui.clickgui.AbstractComponent;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FlowLayout implements ILayoutManager {
     private static final int DEFAULT_VERTICAL_PADDING = 7;
@@ -85,7 +86,7 @@ public class FlowLayout implements ILayoutManager {
 
     @Override
     public Layout buildLayout(List<AbstractComponent> components, int width, int height) {
-        HashMap<AbstractComponent, int[]> map = new HashMap<>();
+        HashMap<AbstractComponent, int[]> map = new HashMap<AbstractComponent, int[]>();
 
         int currX = verticalPadding;
         int currY = horizontalPadding;
@@ -114,6 +115,24 @@ public class FlowLayout implements ILayoutManager {
 
         }
 
-        return new Layout(map, map.entrySet().stream().map(entry -> entry.getValue()[1] + entry.getKey().getHeight()).max(Integer::compareTo).orElse(0), map.entrySet().stream().map(entry -> entry.getValue()[0] + entry.getKey().getWidth()).max(Integer::compareTo).orElse(0));
+        boolean seen = false;
+        Integer best = null;
+        for (Map.Entry<AbstractComponent, int[]> abstractComponentEntry : map.entrySet()) {
+            Integer integer = abstractComponentEntry.getValue()[1] + abstractComponentEntry.getKey().getHeight();
+            if (!seen || integer.compareTo(best) > 0) {
+                seen = true;
+                best = integer;
+            }
+        }
+        boolean seen1 = false;
+        Integer result = null;
+        for (Map.Entry<AbstractComponent, int[]> entry : map.entrySet()) {
+            Integer integer = entry.getValue()[0] + entry.getKey().getWidth();
+            if (!seen1 || integer.compareTo(result) > 0) {
+                seen1 = true;
+                result = integer;
+            }
+        }
+        return new Layout(map, seen ? best : 0, seen1 ? result : 0);
     }
 }

@@ -11,9 +11,8 @@
 package net.superblaubeere27.clientbase.gui.clickgui.components;
 
 import net.superblaubeere27.clientbase.gui.clickgui.IRenderer;
+import net.superblaubeere27.clientbase.utils.Function;
 import org.lwjgl.input.Keyboard;
-
-import java.util.function.Function;
 
 public class KeybindButton extends Button {
     private ValueChangeListener<Integer> listener;
@@ -36,23 +35,29 @@ public class KeybindButton extends Button {
     }
 
     private void initialize() {
-        setOnClickListener(() -> {
-            listening = !listening;
+        setOnClickListener(new ActionEventListener() {
+            @Override
+            public void onActionEvent() {
+                listening = !listening;
 
-            updateState();
+                KeybindButton.this.updateState();
+            }
         });
 
         updateState();
     }
 
     @Override
-    public void setOnClickListener(ActionEventListener listener) {
+    public void setOnClickListener(final ActionEventListener listener) {
         if (getOnClickListener() != null) {
-            ActionEventListener old = getOnClickListener();
+            final ActionEventListener old = getOnClickListener();
 
-            super.setOnClickListener(() -> {
-                listener.onActionEvent();
-                old.onActionEvent();
+            super.setOnClickListener(new ActionEventListener() {
+                @Override
+                public void onActionEvent() {
+                    listener.onActionEvent();
+                    old.onActionEvent();
+                }
             });
         } else {
             super.setOnClickListener(listener);

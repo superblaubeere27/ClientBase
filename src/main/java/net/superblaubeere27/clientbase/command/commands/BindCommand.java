@@ -24,7 +24,8 @@ import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static net.superblaubeere27.clientbase.command.commands.ToggleCommand.getStrings;
 
 public class BindCommand extends Command {
     private boolean active = false;
@@ -77,14 +78,13 @@ public class BindCommand extends Command {
         }
 
         if (flag) {
-            String finalPrefix = prefix;
-            return ClientBase.INSTANCE.moduleManager.getModules().stream().filter(mod -> mod.getName().toLowerCase().startsWith(finalPrefix)).map(Module::getName).collect(Collectors.toList());
+            return getStrings(prefix);
         } else if (arg == 2) {
-            ArrayList<String> arrayList = new ArrayList<>();
+            ArrayList<String> arrayList = new ArrayList<String>();
             arrayList.add("none");
             arrayList.add("show");
             return arrayList;
-        } else return new ArrayList<>();
+        } else return new ArrayList<String>();
     }
 
     @EventTarget

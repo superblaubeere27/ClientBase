@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class NotificationManager {
     @NotNull
-    private static LinkedBlockingQueue<Notification> pendingNotifications = new LinkedBlockingQueue<>();
+    private static LinkedBlockingQueue<Notification> pendingNotifications = new LinkedBlockingQueue<Notification>();
     @Nullable
     private static Notification currentNotification = null;
 

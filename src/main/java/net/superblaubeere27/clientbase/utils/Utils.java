@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.Proxy;
 import java.util.Random;
 
@@ -78,6 +80,11 @@ public class Utils {
      * By DarkStorm
      */
     public static Point calculateMouseLocation() {
+        return getPoint();
+    }
+
+    @NotNull
+    public static Point getPoint() {
         Minecraft minecraft = Minecraft.getMinecraft();
         int scale = minecraft.gameSettings.guiScale;
         if (scale == 0)
@@ -86,5 +93,26 @@ public class Utils {
         while (scaleFactor < scale && minecraft.displayWidth / (scaleFactor + 1) >= 320 && minecraft.displayHeight / (scaleFactor + 1) >= 240)
             scaleFactor++;
         return new Point(Mouse.getX() / scaleFactor, minecraft.displayHeight / scaleFactor - Mouse.getY() / scaleFactor - 1);
+    }
+
+    public static Field getFieldOfClass(Class<?> clazz, String field) throws NoSuchFieldException {
+        return clazz.getDeclaredField(field);
+    }
+
+    public static void setFinalField(Field field, Object instance, Object newValue) throws NoSuchFieldException, IllegalAccessException {
+        field.setAccessible(true);
+
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+
+        field.set(instance, newValue);
+    }
+
+    public static void setSession(Session session) throws NoSuchFieldException, IllegalAccessException {
+        Field sessionField = getFieldOfClass(Minecraft.class, Minecraft.class.getName().equals("ave") ? "ae" : "session");
+
+        setFinalField(sessionField, Minecraft.getMinecraft(), session);
     }
 }

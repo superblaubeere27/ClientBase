@@ -28,19 +28,24 @@ public class ConnectCommand extends Command {
     }
 
     @Override
-    public void run(String alias, @NotNull String[] args) {
+    public void run(String alias, @NotNull final String[] args) {
         if (args.length != 1) {
             throw new CommandException("Usage: ." + alias + " <server-address>");
         }
 
         // See https://github.com/Wurst-Imperium/Wurst-MC-1.12/blob/master/shared-src/net/wurstclient/bot/commands/JoinCmd.java
-        Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiConnecting(new GuiMainMenu(), Minecraft.getMinecraft(),
-                new ServerData("", args[0], false))));
+        Minecraft.getMinecraft().addScheduledTask(new Runnable() {
+            @Override
+            public void run() {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiConnecting(new GuiMainMenu(), Minecraft.getMinecraft(),
+                        new ServerData("", args[0], false)));
+            }
+        });
     }
 
     @NotNull
     @Override
     public List<String> autocomplete(int arg, String[] args) {
-        return new ArrayList<>();
+        return new ArrayList<String>();
     }
 }

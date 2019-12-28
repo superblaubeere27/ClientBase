@@ -35,7 +35,7 @@ public class TabGui<T> {
     static Color SELECTED = new Color(38, 164, 78, 200);
     static Color FOREGROUND = Color.white;
     @NotNull
-    private List<Tab<T>> tabs = new ArrayList<>();
+    private List<Tab<T>> tabs = new ArrayList<Tab<T>>();
     private int selectedTab = 0;
     private int selectedSubTab = -1;
 

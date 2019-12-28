@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetbackDetector extends Module {
-    private List<Vec3> lastLocations = new ArrayList<>();
-    private List<Long> lastSetBacks = new ArrayList<>();
+    private List<Vec3> lastLocations = new ArrayList<Vec3>();
+    private List<Long> lastSetBacks = new ArrayList<Long>();
 
     public SetbackDetector() {
         super("FlagDetector", "Detects flags", ModuleCategory.MOVEMENT);
@@ -37,7 +37,7 @@ public class SetbackDetector extends Module {
     private void onMove(MotionUpdateEvent event) {
         if (event.getEventType() != EventType.POST) return;
 
-        List<Long> remove = new ArrayList<>();
+        List<Long> remove = new ArrayList<Long>();
 
         for (Long lastSetBack : lastSetBacks) {
             if (System.currentTimeMillis() - lastSetBack > 5000) {
@@ -61,7 +61,13 @@ public class SetbackDetector extends Module {
     private void onPacket(PacketEvent event) {
         if (event.getPacket() instanceof S08PacketPlayerPosLook) {
             S08PacketPlayerPosLook p = (S08PacketPlayerPosLook) event.getPacket();
-            boolean setback = lastLocations.stream().anyMatch(loc -> p.getX() == loc.xCoord && p.getY() == loc.yCoord && p.getZ() == loc.zCoord);
+            boolean setback = false;
+            for (Vec3 loc : lastLocations) {
+                if (p.getX() == loc.xCoord && p.getY() == loc.yCoord && p.getZ() == loc.zCoord) {
+                    setback = true;
+                    break;
+                }
+            }
 
             if (setback) {
                 lastSetBacks.add(System.currentTimeMillis());

@@ -47,11 +47,6 @@ repositories {
     jcenter()
 
     maven {
-        name "Mods"
-        url "http://dl.tsr.me/artifactory/libs-release/"
-    }
-
-    maven {
         name = 'spongepowered-repo'
         url = 'http://repo.spongepowered.org/maven/'
     }
